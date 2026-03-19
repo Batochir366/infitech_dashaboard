@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("users")
+}
+
+model Domain {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  isEnabled Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  clients   Client[]
+
+  @@map("domains")
+}
+
+model Client {
+  id           Int          @id @default(autoincrement())
+  name         String
+  regNumber    String?
+  phoneNumber  String
+  phoneNumber2 String?
+  email        String?
+  invoice      Float
+  paymentDate  String
+  status       ClientStatus @default(active)
+  domainId     Int?
+  domain       Domain?      @relation(fields: [domainId], references: [id])
+  notes        String?
+  productType  String?
+  isConnected  Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@map("clients")
+}
+
+model Module {
+  id        Int      @id @default(autoincrement())
+  title      String
+  code      String
+  isEnabled Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  plans Plan[]
+
+  @@map("modules")
+}
+
+model Plan {
+  id        Int      @id @default(autoincrement())
+  moduleId    Int
+  module      Module   @relation(fields: [moduleId], references: [id])
+  title      String
+  description String?
+  credit     Int
+  price     Float
+  discount  Float
+  isEnabled Boolean @default(true)
+  allowedDomains String? @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  items PlanItem[]
+  @@map("plans")
+}
+
+model PlanItem {
+  id        Int      @id @default(autoincrement())
+  planId    Int
+  plan      Plan     @relation(fields: [planId], references: [id])
+  title      String
+  @@map("plan_items")
+}
+
+enum ClientStatus {
+  active
+  inactive
+}
