@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -19,9 +19,21 @@ type LoginFormValues = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const toast = useToast()
   const [loginError, setLoginError] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+
+  const returnTo = searchParams.get("returnTo") ?? "/"
+  const safeReturnTo = returnTo.startsWith("/") ? returnTo : "/"
+  const authError = searchParams.get("error")
+
+  useEffect(() => {
+    if (authError === "unauthorized") {
+      setLoginError(true)
+      toast.error("Таны token хугацаа дууссан байна. Дахин нэвтэрнэ үү")
+    }
+  }, [])
 
   const {
     register,
@@ -37,7 +49,7 @@ export default function LoginPage() {
       localStorage.setItem("auth_token", res.data.token)
       setLoginError(false)
       toast.success("Амжилттай нэвтээгдлээ")
-      navigate("/")
+      navigate(safeReturnTo)
     } catch {
       setLoginError(true)
       toast.error("Нэвтрэх нэр эсвэл нууц үг буруу байна")

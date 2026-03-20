@@ -1,8 +1,8 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import DashboardLayout from "../layouts/DashboardLayout"
 import AuthLayout from "../layouts/AuthLayout"
 
 import { Navigate } from "react-router-dom"
+import AuthGuard from "../middlewares/authGuard"
 import LoginPage from "../pages/auth/LoginPage"
 import ClientListPage from "../pages/clients/ClientListPage"
 import ClientFormPage from "../pages/clients/ClientFormPage"
@@ -11,10 +11,10 @@ import ModuleListPage from "../pages/modules/ModuleListPage"
 import ModuleDetailPage from "../pages/modules/ModuleDetailPage"
 import DomainListPage from "../pages/domains/DomainListPage"
 
-export const router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
-    element: <DashboardLayout />,
+    element: <AuthGuard />,
     children: [
       {
         index: true,
