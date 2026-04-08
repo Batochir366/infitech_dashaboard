@@ -21,7 +21,7 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const toast = useToast()
-  const [loginError, setLoginError] = useState(false)
+
   const [showPassword, setShowPassword] = useState(false)
 
   const returnTo = searchParams.get("returnTo") ?? "/"
@@ -30,7 +30,6 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (authError === "unauthorized") {
-      setLoginError(true)
       toast.error("Таны token хугацаа дууссан байна. Дахин нэвтэрнэ үү")
     }
   }, [])
@@ -47,45 +46,35 @@ export default function LoginPage() {
     try {
       const res = await apiClient.post("/auth/login", data)
       localStorage.setItem("auth_token", res.data.token)
-      setLoginError(false)
       toast.success("Амжилттай нэвтээгдлээ")
       navigate(safeReturnTo)
     } catch {
-      setLoginError(true)
       toast.error("Нэвтрэх нэр эсвэл нууц үг буруу байна")
     }
   }
 
   return (
     <div>
-      <div className="flex justify-center">
-        {loginError ? (
-          <img src="/200.gif" alt="error" className="w-40 h-40 relative top-8" />
-        ) : (
-          <img src="/peeker.gif" alt="peeker" className="w-40 h-40 relative top-20" />
-        )}
-      </div>
       <Card className="border-none shadow-xl">
-        <CardHeader className="space-y-1 pt-10">
+        <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Нэвтрэх</CardTitle>
           <CardDescription className="text-center">
-            Нэвтрэх нэр эсвэл нууц үгээ оруулна уу
+            Имэйл болон нууц үгээ оруулна уу
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="grid gap-4">
             <div className="grid gap-2">
-              <label htmlFor="email" className="text-sm font-medium">Email</label>
-              <Input id="email" type="email" placeholder="admin@example.com" {...register("email", { onChange: () => setLoginError(false) })} />
+              <label htmlFor="email" className="text-sm font-medium">Имэйл</label>
+              <Input id="email" type="email" placeholder="admin@example.com" {...register("email")} />
               {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
             </div>
             <div className="grid gap-2">
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="text-sm font-medium">Password</label>
-
+                <label htmlFor="password" className="text-sm font-medium">Нууц үг</label>
               </div>
               <div className="relative">
-                <Input id="password" type={showPassword ? "text" : "password"} {...register("password", { onChange: () => setLoginError(false) })} className="pr-10" />
+                <Input id="password" type={showPassword ? "text" : "password"} {...register("password")} className="pr-10" />
                 <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -95,12 +84,12 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Signing in..." : "Sign In"}
+              {isSubmitting ? "..." : "Нэвтрэх"}
             </Button>
           </CardFooter>
         </form>
       </Card>
-    </div>
+    </div >
 
   )
 }

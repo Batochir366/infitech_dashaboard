@@ -36,7 +36,7 @@ export function Sidebar({ collapsed, setCollapsed }: SidebarProps) {
       <div className="flex h-full flex-col">
         <div className="flex h-16 items-center justify-between px-4">
           {!collapsed && (
-            <img src="" alt="logo" className="w-50 h-30" />
+            <img src="/logo_black.png" alt="logo" className="w-auto h-6 sm:h-8" />
           )}
           <Button
             variant="ghost"
